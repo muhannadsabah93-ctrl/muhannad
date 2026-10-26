@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الفحص الخاص بمعامل القالب للخرسانة الجاهزة - نظام إدارة المستخدمين الصلاحيات</title>
+    <!-- Cairo Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #334155;
+            --bg-input: #0f172a;
+            --border-color: #475569;
+            
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #22c55e;
+            --success-hover: #16a34a;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --font-family: 'Cairo', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            direction: rtl;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--bg-surface);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: var(--success-hover); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-warning:hover { background: var(--warning-hover); }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-purple:hover { background: #7c3aed; }
+        .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--border-color); }
+        .btn-block { width: 100%; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.825rem; }
+
+        header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-title i {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .brand-title h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--bg-card);
+            padding: 0.4rem 0.9rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        nav.nav-tabs {
+            background: var(--bg-surface);
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-details h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-details .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        th {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-success { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+        .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); border: 1px solid var(--purple); }
+        .badge-secondary { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: var(--bg-surface);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body { padding: 1.5rem; }
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .filters-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--bg-surface);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .filters-bar .form-control { max-width: 220px; }
+        .admin-only, .tester-only { transition: all 0.2s; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Login Screen -->
+    <div id="login-screen">
+        <div class="login-card">
+            <i class="fa-solid fa-cubes-stacked" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h2>معامل القالب للخرسانة الجاهزة</h2>
+            <p>تسجيل الدخول للنظام وإدارة الجودة</p>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> اسم المستخدم</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="أدخل اسم المستخدم (مثال: admin)" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-key"></i> كلمة المرور</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="أدخل كلمة المرور" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                    <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+                </button>
+            </form>
+            <div id="login-error" style="color: var(--danger); margin-top: 1rem; font-size: 0.85rem; display: none;"></div>
+            
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); text-size-adjust: auto; font-size: 0.75rem; color: var(--text-muted);">
+                حساب المسؤول الافتراضي: <strong>admin</strong> / كلمة المرور: <strong>123456</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application UI -->
+    <div id="app-container" style="display: none; flex-direction: column; min-height: 100vh;">
+        
+        <header>
+            <div class="brand-title">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <div>
+                    <h1>نظام الفحص الخاص بمعامل القالب للخرسانة الجاهزة</h1>
+                    <span style="font-size: 0.75rem; color: var(--success);" id="connection-status">
+                        <i class="fa-solid fa-cloud"></i> متصل بالسحابة (Firebase)
+                    </span>
+                </div>
+            </div>
+
+            <div class="user-info">
+                <div class="user-badge">
+                    <i class="fa-solid fa-circle-user" style="color: var(--primary); font-size: 1.1rem;"></i>
+                    <div>
+                        <strong id="display-user-name">المستخدم</strong>
+                        <span id="display-user-role" class="badge badge-purple" style="margin-right: 0.4rem;">مدير</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="handleLogout()" style="color: var(--danger);">
+                    <i class="fa-solid fa-right-from-bracket"></i> خروج
+                </button>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-chart-pie"></i> لوحة التحكم
+            </button>
+            <button class="tab-btn tester-only" id="nav-add-mix-tab" onclick="switchTab('add-mix')">
+                <i class="fa-solid fa-plus-circle"></i> إضافة خلطة خرسانية
+            </button>
+            <button class="tab-btn" onclick="switchTab('alerts')">
+                <i class="fa-solid fa-bell"></i> التنبيهات والمواعيد
+                <span id="alerts-badge-count" class="badge badge-danger" style="display: none; margin-right: 0.5rem;">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('general-log')">
+                <i class="fa-solid fa-table-list"></i> الجدول العام للفحوصات
+            </button>
+            <button class="tab-btn admin-only" id="nav-users-tab" onclick="switchTab('users')">
+                <i class="fa-solid fa-users-gear"></i> إدارة المستخدمين والصلاحيات
+            </button>
+        </nav>
+
+        <main>
+            <!-- 1. TAB: Dashboard -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="grid-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--primary);"><i class="fa-solid fa-vial"></i></div>
+                        <div class="stat-details">
+                            <h3>إجمالي الخلطات</h3>
+                            <div class="value" id="stat-total-mixes">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--warning);"><i class="fa-solid fa-clock"></i></div>
+                        <div class="stat-details">
+                            <h3>الفحوصات المستحقة</h3>
+                            <div class="value" id="stat-due-tests">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-details">
+                            <h3>الفحوصات المتأخرة</h3>
+                            <div class="value" id="stat-overdue-tests">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--success);"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-details">
+                            <h3>نتائج مستوفية</h3>
+                            <div class="value" id="stat-passed-tests">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--danger);"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-details">
+                            <h3>غير مستوفية</h3>
+                            <div class="value" id="stat-failed-tests">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-building" style="color: var(--primary);"></i> إدارة الشركات المتعاقدة</div>
+                        </div>
+                        <form onsubmit="handleAddCompany(event)" class="admin-only" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <input type="text" id="new-company-name" class="form-control" placeholder="اسم الشركة الجديد..." required>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة</button>
+                        </form>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>الشركة</th><th class="admin-only">الإجراءات</th></tr></thead>
+                                <tbody id="companies-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-location-dot" style="color: var(--warning);"></i> إدارة المواقع التابعة</div>
+                        </div>
+                        <form onsubmit="handleAddSite(event)" class="admin-only" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                            <select id="new-site-company" class="form-control" required><option value="">اختر الشركة...</option></select>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="new-site-name" class="form-control" placeholder="اسم الموقع الجديد..." required>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة</button>
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>الموقع</th><th>الشركة</th><th class="admin-only">الإجراءات</th></tr></thead>
+                                <tbody id="sites-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-layer-group" style="color: var(--success);"></i> إدارة رموز ومقاومة الكونكريت</div>
+                        </div>
+                        <form onsubmit="handleAddCode(event)" class="admin-only" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="new-code-name" class="form-control" placeholder="الرمز (مثل C30)" required>
+                                <input type="number" step="0.1" id="new-code-target" class="form-control" placeholder="المقاومة (MPa)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة الرمز</button>
+                        </form>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>الرمز</th><th>المقاومة المطلوبة</th><th class="admin-only">الإجراءات</th></tr></thead>
+                                <tbody id="codes-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TAB: Add Mix Form -->
+            <div id="tab-add-mix" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-flask-vial" style="color: var(--primary);"></i> إضافة نموذج خلطة خرسانية جديدة</div>
+                    </div>
+                    
+                    <form id="add-mix-form" onsubmit="handleSaveMix(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>رقم الفحص التلقائي</label>
+                                <input type="text" id="mix-id" class="form-control" readonly style="background: var(--bg-card); font-weight: bold;">
+                            </div>
+                            <div class="form-group">
+                                <label>تاريخ الخلط</label>
+                                <input type="date" id="mix-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>وقت الخلط</label>
+                                <input type="time" id="mix-time" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الشركة المتعاقدة</label>
+                                <select id="mix-company" class="form-control" required onchange="updateSiteDropdownForMix()"><option value="">اختر الشركة...</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>اسم الموقع</label>
+                                <select id="mix-site" class="form-control" required><option value="">اختر الموقع...</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>رمز الكونكريت</label>
+                                <select id="mix-code" class="form-control" required><option value="">اختر الرمز...</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>نوع الخلطة / وصف المادة</label>
+                                <input type="text" id="mix-material-name" class="form-control" placeholder="خرسانة مسلحة / أسقف / أعمدة..." required>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary);"><i class="fa-solid fa-scale-balanced"></i> كميات المواد في الخلطة الخرسانية</h4>
+
+                        <div class="form-grid">
+                            <div class="form-group"><label>كمية الرمل (كغم / م³)</label><input type="number" step="0.1" id="mix-sand" class="form-control" required></div>
+                            <div class="form-group"><label>كمية الحصى (كغم / م³)</label><input type="number" step="0.1" id="mix-gravel" class="form-control" required></div>
+                            <div class="form-group"><label>كمية الإسمنت (كغم / م³)</label><input type="number" step="0.1" id="mix-cement" class="form-control" required></div>
+                            <div class="form-group"><label>كمية المادة المضافة (لتر / م³)</label><input type="number" step="0.01" id="mix-additive" class="form-control" required></div>
+                            <div class="form-group"><label>كمية الماء (لتر / م³)</label><input type="number" step="0.1" id="mix-water" class="form-control" required></div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label>ملاحظات إضافية</label>
+                            <textarea id="mix-notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="button" class="btn btn-secondary" onclick="resetMixForm()"><i class="fa-solid fa-rotate-right"></i> تفريغ</button>
+                            <button type="submit" class="btn btn-success" style="padding: 0.75rem 2.5rem;"><i class="fa-solid fa-floppy-disk"></i> حفظ الخلطة للسحابة</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. TAB: Alerts -->
+            <div id="tab-alerts" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-bell" style="color: var(--warning);"></i> جدول التنبيهات ومواعيد كسر المكعبات (7 أيام و 28 يوماً)</div>
+                    </div>
+                    <div class="filters-bar">
+                        <select id="filter-alert-status" class="form-control" onchange="renderAlertsTable()">
+                            <option value="ALL">جميع الحالات</option>
+                            <option value="DUE">المستحقة اليوم</option>
+                            <option value="OVERDUE">المتأخرة</option>
+                            <option value="UPCOMING">القادمة</option>
+                            <option value="COMPLETED">المكتملة</option>
+                        </select>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>رقم الفحص</th><th>الشركة والموقع</th><th>رمز الكونكريت</th><th>عمر الفحص</th><th>تاريخ الاستحقاق</th><th>الحالة</th><th>الأيام المتبقية</th><th class="tester-only">الإجراءات</th></tr></thead>
+                            <tbody id="alerts-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAB: General Log -->
+            <div id="tab-general-log" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-table" style="color: var(--primary);"></i> السجل العام المتكامل لنتائج وفحوصات الخرسانة (السحابي)</div>
+                        <button class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة السجل</button>
+                    </div>
+                    <div class="filters-bar">
+                        <input type="text" id="search-log-input" class="form-control" placeholder="بحث..." oninput="renderGeneralLogTable()">
+                        <select id="filter-log-company" class="form-control" onchange="renderGeneralLogTable()"><option value="">جميع الشركات</option></select>
+                        <select id="filter-log-code" class="form-control" onchange="renderGeneralLogTable()"><option value="">جميع الرموز</option></select>
+                        <select id="filter-log-status" class="form-control" onchange="renderGeneralLogTable()">
+                            <option value="">جميع النتائج</option>
+                            <option value="PASSED">مستوفية</option>
+                            <option value="FAILED">غير مستوفية</option>
+                            <option value="PENDING">قيد الانتظار</option>
+                        </select>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت</th><th>ماء</th><th>مضافة</th><th>نتيجة 7 أيام</th><th>حالة 7 أيام</th><th>نتيجة 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="admin-only">خيارات</th></tr></thead>
+                            <tbody id="general-log-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TAB: Users & Roles Management (Admin Only) -->
+            <div id="tab-users" class="tab-content admin-only">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-users-gear" style="color: var(--purple);"></i> إدارة حسابات المستخدمين ومستويات الصلاحية</div>
+                    </div>
+
+                    <!-- Create/Edit User Form -->
+                    <form id="user-form" onsubmit="handleSaveUser(event)" style="margin-bottom: 2rem; background: var(--bg-card); padding: 1.25rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                        <input type="hidden" id="edit-user-doc-id">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary); font-size: 1rem;" id="user-form-title"><i class="fa-solid fa-user-plus"></i> إضافة مستخدم جديد للنظام</h4>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>اسم المستخدم (Login Username)</label>
+                                <input type="text" id="user-username" class="form-control" placeholder="مثال: ahmad12" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الاسم الكامل</label>
+                                <input type="text" id="user-fullname" class="form-control" placeholder="مثال: م. أحمد علي" required>
+                            </div>
+                            <div class="form-group">
+                                <label>كلمة المرور</label>
+                                <input type="password" id="user-password" class="form-control" placeholder="أدخل كلمة المرور" required>
+                            </div>
+                            <div class="form-group">
+                                <label>مستوى الصلاحية (الدور)</label>
+                                <select id="user-role" class="form-control" required>
+                                    <option value="ADMIN">مدير نظام (Admin) - كافة الصلاحيات</option>
+                                    <option value="TESTER">فني مختبر / مهندس (Tester) - إدخال نتائج وفحص</option>
+                                    <option value="VIEWER">مستعرض (Viewer) - قراءة واستعراض فقط</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="resetUserForm()"><i class="fa-solid fa-rotate-right"></i> إلغاء</button>
+                            <button type="submit" class="btn btn-purple"><i class="fa-solid fa-user-check"></i> حفظ بيانات المستخدم</button>
+                        </div>
+                    </form>
+
+                    <!-- Users Table -->
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>اسم المستخدم</th>
+                                    <th>الاسم الكامل</th>
+                                    <th>الصلاحية / الدور</th>
+                                    <th>تاريخ الإنشاء</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="test-result-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-vial-circle-check"></i> إدخال نتيجة فحص الكسر</h3>
+                <button class="btn btn-secondary" onclick="closeModal('test-result-modal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleSaveTestResult(event)">
+                    <input type="hidden" id="tr-mix-doc-id">
+                    <input type="hidden" id="tr-test-type">
+                    <div style="background: var(--bg-card); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.25rem;">
+                        <span>رقم الفحص: <strong id="tr-display-id" style="color: var(--primary);"></strong></span> | 
+                        <span>عمر الفحص: <strong id="tr-display-type"></strong></span> | 
+                        <span>المقاومة المطلوبة: <strong id="tr-display-target" style="color: var(--warning);"></strong> MPa</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>تاريخ الكسر الفعلي</label><input type="date" id="tr-actual-date" class="form-control" required></div>
+                        <div class="form-group"><label>مقاومة الكسر الفعلية (MPa)</label><input type="number" step="0.1" id="tr-strength-result" class="form-control" required oninput="calculateTestCompliance()"></div>
+                    </div>
+                    <div id="tr-compliance-box" style="margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; text-align: center; display: none;">
+                        <h4 id="tr-compliance-text"></h4>
+                        <p id="tr-compliance-diff"></p>
+                    </div>
+                    <div class="modal-footer" style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-floppy-disk"></i> حفظ النتيجة للسحابة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Scripts (Firestore Only) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // إعدادات Firebase الخاص بالمشروع
+        const firebaseConfig = {
+            apiKey: "AIzaSyAt1AituieZyn4jMMUBxUFzYGoUE04v690",
+            authDomain: "alimuhannad.firebaseapp.com",
+            databaseURL: "https://alimuhannad-default-rtdb.firebaseio.com",
+            projectId: "alimuhannad",
+            storageBucket: "alimuhannad.firebasestorage.app",
+            messagingSenderId: "768264994428",
+            appId: "1:768264994428:web:60dbb5b4825fc7091693f9",
+            measurementId: "G-D7FRL5HGRG"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // جعل الأدوات متاحة عالمياً
+        window.FB = { db, collection, getDocs, addDoc, doc, updateDoc, deleteDoc };
+    </script>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // كاش بيانات السحابة
+        let dbCache = { companies: [], sites: [], codes: [], mixes: [], users: [] };
+        let currentUser = null; // المستخدم المسجل حالياً
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedSession = sessionStorage.getItem('qaleb_user_session');
+            if (savedSession) {
+                currentUser = JSON.parse(savedSession);
+                showAppUI();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
+            }
+            prepareAddMixForm();
+        });
+
+        // تسجيل الدخول مع التحقق من بيانات المستخدمين السحابية + حساب الـ Admin الاحتياطي
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('login-username').value.trim();
+            const passInput = document.getElementById('login-password').value.trim();
+            const errDiv = document.getElementById('login-error');
+
+            errDiv.style.display = 'none';
+
+            // 1. حساب المسؤول الافتراضي الاحتياطي
+            if (userInput === "admin" && passInput === "123456") {
+                currentUser = {
+                    username: "admin",
+                    fullname: "مدير النظام الرئيسي",
+                    role: "ADMIN"
+                };
+                sessionStorage.setItem('qaleb_user_session', JSON.stringify(currentUser));
+                showAppUI();
+                return;
+            }
+
+            // 2. التحقق من السحابة في مجموعة المستخدمين
+            try {
+                if (window.FB && window.FB.db) {
+                    const usersSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "users"));
+                    const userDoc = usersSnap.docs.map(d => ({ docId: d.id, ...d.data() }))
+                                                 .find(u => u.username === userInput && u.password === passInput);
+
+                    if (userDoc) {
+                        currentUser = {
+                            docId: userDoc.docId,
+                            username: userDoc.username,
+                            fullname: userDoc.fullname,
+                            role: userDoc.role
+                        };
+                        sessionStorage.setItem('qaleb_user_session', JSON.stringify(currentUser));
+                        showAppUI();
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error("خطأ في التحقق من المستخدمين:", err);
+            }
+
+            errDiv.innerText = 'اسم المستخدم أو كلمة المرور غير صحيحة!';
+            errDiv.style.display = 'block';
+        }
+
+        window.handleLogout = function() {
+            sessionStorage.removeItem('qaleb_user_session');
+            currentUser = null;
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('app-container').style.display = 'none';
+        }
+
+        async function showAppUI() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            
+            applyRolePermissionsUI();
+            await fetchAllCloudData();
+            switchTab('dashboard');
+        }
+
+        // تطبيق الصلاحيات على العناصر البرمجية والواجهة (Role Based Access Control)
+        function applyRolePermissionsUI() {
+            if (!currentUser) return;
+
+            document.getElementById('display-user-name').innerText = currentUser.fullname || currentUser.username;
+            const roleBadge = document.getElementById('display-user-role');
+
+            if (currentUser.role === 'ADMIN') {
+                roleBadge.innerText = 'مدير النظام (Admin)';
+                roleBadge.className = 'badge badge-purple';
+            } else if (currentUser.role === 'TESTER') {
+                roleBadge.innerText = 'فني مختبر (Tester)';
+                roleBadge.className = 'badge badge-warning';
+            } else {
+                roleBadge.innerText = 'مستعرض (Viewer)';
+                roleBadge.className = 'badge badge-secondary';
+            }
+
+            // إخفاء أو إظهار العناصر بحسب الدور
+            const isAdmin = currentUser.role === 'ADMIN';
+            const isTesterOrAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'TESTER';
+
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = isAdmin ? '' : 'none';
+            });
+
+            document.querySelectorAll('.tester-only').forEach(el => {
+                el.style.display = isTesterOrAdmin ? '' : 'none';
+            });
+        }
+
+        // جلب البيانات من Firestore السحابي
+        async function fetchAllCloudData() {
+            try {
+                if (!window.FB || !window.FB.db) return;
+
+                const compSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "companies"));
+                dbCache.companies = compSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const siteSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "sites"));
+                dbCache.sites = siteSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const codeSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "codes"));
+                dbCache.codes = codeSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const mixSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "mixes"));
+                dbCache.mixes = mixSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const userSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "users"));
+                dbCache.users = userSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                refreshAllDataViews();
+            } catch (err) {
+                console.error("خطأ في جلب البيانات:", err);
+            }
+        }
+
+        function refreshAllDataViews() {
+            renderDashboardStats();
+            renderCompaniesTable();
+            renderSitesTable();
+            renderCodesTable();
+            populateDropdowns();
+            renderAlertsTable();
+            renderGeneralLogTable();
+            renderUsersTable();
+        }
+
+        window.switchTab = function(tabId) {
+            // التحقق من الصلاحيات للتبويب
+            if (tabId === 'users' && currentUser.role !== 'ADMIN') {
+                alert('عذراً، هذا التبويب مخصص لمسؤولي النظام فقط.');
+                return;
+            }
+            if (tabId === 'add-mix' && currentUser.role === 'VIEWER') {
+                alert('عذراً، صلاحيتك هي العرض فقط.');
+                return;
+            }
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            if(tabId === 'dashboard') btns[0].classList.add('active');
+            if(tabId === 'add-mix') { btns[1].classList.add('active'); prepareAddMixForm(); }
+            if(tabId === 'alerts') btns[2].classList.add('active');
+            if(tabId === 'general-log') btns[3].classList.add('active');
+            if(tabId === 'users') document.getElementById('nav-users-tab').classList.add('active');
+        }
+
+        function renderDashboardStats() {
+            document.getElementById('stat-total-mixes').innerText = dbCache.mixes.length;
+            let dueCount = 0, overdueCount = 0, passedCount = 0, failedCount = 0;
+            const today = new Date().toISOString().split('T')[0];
+
+            dbCache.mixes.forEach(m => {
+                if (!m.tests) return;
+                ['day7', 'day28'].forEach(type => {
+                    const test = m.tests[type];
+                    if (!test) return;
+                    if (test.status === 'COMPLETED') {
+                        if (test.isPassed) passedCount++; else failedCount++;
+                    } else {
+                        if (test.dueDate === today) dueCount++;
+                        else if (test.dueDate < today) overdueCount++;
+                    }
+                });
+            });
+
+            document.getElementById('stat-due-tests').innerText = dueCount;
+            document.getElementById('stat-overdue-tests').innerText = overdueCount;
+            document.getElementById('stat-passed-tests').innerText = passedCount;
+            document.getElementById('stat-failed-tests').innerText = failedCount;
+
+            const badge = document.getElementById('alerts-badge-count');
+            const totalAlerts = dueCount + overdueCount;
+            if (totalAlerts > 0) { badge.innerText = totalAlerts; badge.style.display = 'inline-block'; }
+            else { badge.style.display = 'none'; }
+        }
+
+        window.handleAddCompany = async function(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بإجراء التعديل!');
+            const name = document.getElementById('new-company-name').value.trim();
+            if (name) {
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "companies"), { name });
+                document.getElementById('new-company-name').value = '';
+                await fetchAllCloudData();
+            }
+        }
+
+        window.handleDeleteCompany = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالإجراء!');
+            if (confirm('حذف هذه الشركة؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "companies", docId));
+                await fetchAllCloudData();
+            }
+        }
+
+        function renderCompaniesTable() {
+            const tbody = document.getElementById('companies-table-body');
+            tbody.innerHTML = '';
+            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+            dbCache.companies.forEach(c => {
+                let actionsTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteCompany('${c.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                tbody.innerHTML += `<tr><td><strong>${c.name}</strong></td>${actionsTd}</tr>`;
+            });
+        }
+
+        window.handleAddSite = async function(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بإجراء التعديل!');
+            const companyId = document.getElementById('new-site-company').value;
+            const name = document.getElementById('new-site-name').value.trim();
+            if (companyId && name) {
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "sites"), { companyId, name });
+                document.getElementById('new-site-name').value = '';
+                await fetchAllCloudData();
+            }
+        }
+
+        window.handleDeleteSite = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالإجراء!');
+            if (confirm('حذف هذا الموقع؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "sites", docId));
+                await fetchAllCloudData();
+            }
+        }
+
+        function renderSitesTable() {
+            const tbody = document.getElementById('sites-table-body');
+            tbody.innerHTML = '';
+            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+            dbCache.sites.forEach(s => {
+                const comp = dbCache.companies.find(c => c.docId === s.companyId);
+                let actionsTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteSite('${s.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                tbody.innerHTML += `<tr><td><strong>${s.name}</strong></td><td>${comp ? comp.name : '-'}</td>${actionsTd}</tr>`;
+            });
+        }
+
+        window.handleAddCode = async function(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بإجراء التعديل!');
+            const name = document.getElementById('new-code-name').value.trim();
+            const target = parseFloat(document.getElementById('new-code-target').value);
+            if (name && target) {
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "codes"), { name, target });
+                document.getElementById('new-code-name').value = '';
+                document.getElementById('new-code-target').value = '';
+                await fetchAllCloudData();
+            }
+        }
+
+        window.handleDeleteCode = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالإجراء!');
+            if (confirm('حذف هذا الرمز؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "codes", docId));
+                await fetchAllCloudData();
+            }
+        }
+
+        function renderCodesTable() {
+            const tbody = document.getElementById('codes-table-body');
+            tbody.innerHTML = '';
+            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+            dbCache.codes.forEach(c => {
+                let actionsTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteCode('${c.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                tbody.innerHTML += `<tr><td><span class="badge badge-success">${c.name}</span></td><td><strong>${c.target} MPa</strong></td>${actionsTd}</tr>`;
+            });
+        }
+
+        function populateDropdowns() {
+            const sCompSelect = document.getElementById('new-site-company');
+            sCompSelect.innerHTML = '<option value="">اختر الشركة...</option>';
+            dbCache.companies.forEach(c => sCompSelect.innerHTML += `<option value="${c.docId}">${c.name}</option>`);
+
+            const mixCompSelect = document.getElementById('mix-company');
+            mixCompSelect.innerHTML = '<option value="">اختر الشركة...</option>';
+            dbCache.companies.forEach(c => mixCompSelect.innerHTML += `<option value="${c.docId}">${c.name}</option>`);
+
+            const mixCodeSelect = document.getElementById('mix-code');
+            mixCodeSelect.innerHTML = '<option value="">اختر الرمز...</option>';
+            dbCache.codes.forEach(c => mixCodeSelect.innerHTML += `<option value="${c.docId}">${c.name} (${c.target} MPa)</option>`);
+
+            const filterComp = document.getElementById('filter-log-company');
+            filterComp.innerHTML = '<option value="">جميع الشركات</option>';
+            dbCache.companies.forEach(c => filterComp.innerHTML += `<option value="${c.name}">${c.name}</option>`);
+
+            const filterCode = document.getElementById('filter-log-code');
+            filterCode.innerHTML = '<option value="">جميع الرموز</option>';
+            dbCache.codes.forEach(c => filterCode.innerHTML += `<option value="${c.name}">${c.name}</option>`);
+        }
+
+        window.updateSiteDropdownForMix = function() {
+            const compId = document.getElementById('mix-company').value;
+            const siteSelect = document.getElementById('mix-site');
+            siteSelect.innerHTML = '<option value="">اختر الموقع...</option>';
+            if (compId) {
+                dbCache.sites.filter(s => s.companyId === compId).forEach(s => {
+                    siteSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                });
+            }
+        }
+
+        function prepareAddMixForm() {
+            const today = new Date();
+            document.getElementById('mix-id').value = 'MIX-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('mix-date').value = today.toISOString().split('T')[0];
+            document.getElementById('mix-time').value = today.toTimeString().split(' ')[0].substring(0, 5);
+        }
+
+        window.handleSaveMix = async function(e) {
+            e.preventDefault();
+            if (currentUser.role === 'VIEWER') return alert('غير مصرح لك بإضافة الخلطات!');
+
+            const mixId = document.getElementById('mix-id').value;
+            const mixDate = document.getElementById('mix-date').value;
+            const mixTime = document.getElementById('mix-time').value;
+            
+            const compId = document.getElementById('mix-company').value;
+            const companyObj = dbCache.companies.find(c => c.docId === compId);
+            const siteName = document.getElementById('mix-site').value;
+            
+            const codeId = document.getElementById('mix-code').value;
+            const codeObj = dbCache.codes.find(c => c.docId === codeId);
+
+            const d7 = new Date(mixDate); d7.setDate(d7.getDate() + 7);
+            const d28 = new Date(mixDate); d28.setDate(d28.getDate() + 28);
+
+            const newMix = {
+                id: mixId,
+                date: mixDate,
+                time: mixTime,
+                companyName: companyObj ? companyObj.name : '',
+                siteName,
+                codeName: codeObj ? codeObj.name : '',
+                targetStrength: codeObj ? codeObj.target : 0,
+                materialName: document.getElementById('mix-material-name').value,
+                sand: parseFloat(document.getElementById('mix-sand').value),
+                gravel: parseFloat(document.getElementById('mix-gravel').value),
+                cement: parseFloat(document.getElementById('mix-cement').value),
+                additive: parseFloat(document.getElementById('mix-additive').value),
+                water: parseFloat(document.getElementById('mix-water').value),
+                notes: document.getElementById('mix-notes').value,
+                tests: {
+                    day7: { dueDate: d7.toISOString().split('T')[0], status: 'PENDING', actualDate: null, result: null, isPassed: null },
+                    day28: { dueDate: d28.toISOString().split('T')[0], status: 'PENDING', actualDate: null, result: null, isPassed: null }
+                }
+            };
+
+            await window.FB.addDoc(window.FB.collection(window.FB.db, "mixes"), newMix);
+            alert('تم حفظ الخلطة بنجاح في السحابة!');
+            resetMixForm();
+            await fetchAllCloudData();
+            switchTab('general-log');
+        }
+
+        window.resetMixForm = function() {
+            document.getElementById('add-mix-form').reset();
+            prepareAddMixForm();
+        }
+
+        function renderAlertsTable() {
+            const tbody = document.getElementById('alerts-table-body');
+            tbody.innerHTML = '';
+            const filter = document.getElementById('filter-alert-status').value;
+            const today = new Date().toISOString().split('T')[0];
+            const canEdit = currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'TESTER');
+
+            dbCache.mixes.forEach(mix => {
+                if (!mix.tests) return;
+                ['day7', 'day28'].forEach(type => {
+                    const test = mix.tests[type];
+                    if (!test) return;
+                    const labelType = type === 'day7' ? '7 أيام' : '28 يوماً';
+                    let statusLabel = '', badgeClass = '';
+                    const diffDays = Math.ceil((new Date(test.dueDate) - new Date(today)) / (1000 * 60 * 60 * 24));
+
+                    if (test.status === 'COMPLETED') { statusLabel = 'مكتمل'; badgeClass = 'badge-success'; }
+                    else if (test.dueDate === today) { statusLabel = 'مستحق اليوم'; badgeClass = 'badge-warning'; }
+                    else if (test.dueDate < today) { statusLabel = 'متأخر'; badgeClass = 'badge-danger'; }
+                    else { statusLabel = 'قادم'; badgeClass = 'badge-secondary'; }
+
+                    let include = false;
+                    if (filter === 'ALL') include = true;
+                    else if (filter === 'DUE' && test.status !== 'COMPLETED' && test.dueDate === today) include = true;
+                    else if (filter === 'OVERDUE' && test.status !== 'COMPLETED' && test.dueDate < today) include = true;
+                    else if (filter === 'UPCOMING' && test.status !== 'COMPLETED' && test.dueDate > today) include = true;
+                    else if (filter === 'COMPLETED' && test.status === 'COMPLETED') include = true;
+
+                    if (include) {
+                        let daysText = test.status === 'COMPLETED' ? '-' : (diffDays < 0 ? `متأخر ${Math.abs(diffDays)} يوم` : (diffDays === 0 ? 'اليوم' : `متبقي ${diffDays} يوم`));
+                        let actionTd = canEdit ? `<td><button class="btn btn-warning btn-sm" onclick="openTestModal('${mix.docId}', '${type}')"><i class="fa-solid fa-vial"></i> نتيجة الفحص</button></td>` : '';
+                        
+                        tbody.innerHTML += `<tr>
+                            <td><strong>${mix.id}</strong></td>
+                            <td>${mix.companyName} - ${mix.siteName}</td>
+                            <td><span class="badge badge-secondary">${mix.codeName}</span></td>
+                            <td>${labelType}</td>
+                            <td>${test.dueDate}</td>
+                            <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
+                            <td>${daysText}</td>
+                            ${actionTd}
+                        </tr>`;
+                    }
+                });
+            });
+        }
+
+        window.openTestModal = function(docId, type) {
+            if (currentUser.role === 'VIEWER') return alert('غير مصرح لك بإدخال نتائج الفحص!');
+            const mix = dbCache.mixes.find(m => m.docId === docId);
+            if (!mix) return;
+            const test = mix.tests[type];
+            document.getElementById('tr-mix-doc-id').value = docId;
+            document.getElementById('tr-test-type').value = type;
+            document.getElementById('tr-display-id').innerText = mix.id;
+            document.getElementById('tr-display-type').innerText = type === 'day7' ? '7 أيام' : '28 يوماً';
+            document.getElementById('tr-display-target').innerText = mix.targetStrength;
+            document.getElementById('tr-actual-date').value = test.actualDate || new Date().toISOString().split('T')[0];
+            document.getElementById('tr-strength-result').value = test.result || '';
+            calculateTestCompliance();
+            openModal('test-result-modal');
+        }
+
+        window.calculateTestCompliance = function() {
+            const docId = document.getElementById('tr-mix-doc-id').value;
+            const mix = dbCache.mixes.find(m => m.docId === docId);
+            const valInput = parseFloat(document.getElementById('tr-strength-result').value);
+            const box = document.getElementById('tr-compliance-box');
+            const text = document.getElementById('tr-compliance-text');
+            const diff = document.getElementById('tr-compliance-diff');
+
+            if (!mix || isNaN(valInput)) { box.style.display = 'none'; return; }
+            box.style.display = 'block';
+            const difference = (valInput - mix.targetStrength).toFixed(1);
+            if (valInput >= mix.targetStrength) {
+                box.style.background = 'rgba(34, 197, 94, 0.2)'; box.style.border = '1px solid var(--success)';
+                text.innerText = 'مستوفية للمواصفة الهندسية (PASSED)'; text.style.color = 'var(--success)';
+                diff.innerText = `أعلى من المطلوب بمقدار +${difference} MPa`;
+            } else {
+                box.style.background = 'rgba(239, 68, 68, 0.2)'; box.style.border = '1px solid var(--danger)';
+                text.innerText = 'غير مستوفية للمواصفة (FAILED)'; text.style.color = 'var(--danger)';
+                diff.innerText = `أقل من المقاومة المطلوبة بمقدار ${difference} MPa`;
+            }
+        }
+
+        window.handleSaveTestResult = async function(e) {
+            e.preventDefault();
+            if (currentUser.role === 'VIEWER') return alert('غير مصرح لك بالإجراء!');
+
+            const docId = document.getElementById('tr-mix-doc-id').value;
+            const type = document.getElementById('tr-test-type').value;
+            const actualDate = document.getElementById('tr-actual-date').value;
+            const resultVal = parseFloat(document.getElementById('tr-strength-result').value);
+
+            const mix = dbCache.mixes.find(m => m.docId === docId);
+            if (mix && mix.tests) {
+                mix.tests[type].actualDate = actualDate;
+                mix.tests[type].result = resultVal;
+                mix.tests[type].status = 'COMPLETED';
+                mix.tests[type].isPassed = resultVal >= mix.targetStrength;
+
+                await window.FB.updateDoc(window.FB.doc(window.FB.db, "mixes", docId), { tests: mix.tests });
+                closeModal('test-result-modal');
+                await fetchAllCloudData();
+                alert('تم حفظ النتيجة في السحابة!');
+            }
+        }
+
+        function renderGeneralLogTable() {
+            const tbody = document.getElementById('general-log-table-body');
+            tbody.innerHTML = '';
+            const search = document.getElementById('search-log-input').value.toLowerCase();
+            const filterComp = document.getElementById('filter-log-company').value;
+            const filterCode = document.getElementById('filter-log-code').value;
+            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+
+            dbCache.mixes.forEach(mix => {
+                if (!mix.tests) return;
+                const t7 = mix.tests.day7 || {}, t28 = mix.tests.day28 || {};
+                let overallBadge = '<span class="badge badge-secondary">قيد الفحص</span>';
+                if (t7.status === 'COMPLETED' && t28.status === 'COMPLETED') {
+                    overallBadge = (t7.isPassed && t28.isPassed) ? '<span class="badge badge-success">ناجح ومستوفي</span>' : '<span class="badge badge-danger">غير مستوفي</span>';
+                }
+
+                if ((mix.id.toLowerCase().includes(search) || mix.companyName.toLowerCase().includes(search)) &&
+                    (!filterComp || mix.companyName === filterComp) && (!filterCode || mix.codeName === filterCode)) {
+                    
+                    let actionTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteMix('${mix.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                    
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${mix.id}</strong></td>
+                        <td>${mix.date}</td>
+                        <td>${mix.companyName}<br><small>${mix.siteName}</small></td>
+                        <td><span class="badge badge-secondary">${mix.codeName}</span></td>
+                        <td>${mix.sand}</td><td>${mix.gravel}</td><td>${mix.cement}</td><td>${mix.water}</td><td>${mix.additive}</td>
+                        <td>${t7.result !== null ? t7.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t7)}</td>
+                        <td>${t28.result !== null ? t28.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t28)}</td>
+                        <td>${overallBadge}</td>
+                        ${actionTd}
+                    </tr>`;
+                }
+            });
+        }
+
+        function renderStatusBadge(test) {
+            if (test.status !== 'COMPLETED') return '<span class="badge badge-secondary">انتظار</span>';
+            return test.isPassed ? '<span class="badge badge-success">مستوفية</span>' : '<span class="badge badge-danger">غير مستوفية</span>';
+        }
+
+        window.handleDeleteMix = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالحذف!');
+            if (confirm('حذف هذا السجل بالكامل من السحابة؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "mixes", docId));
+                await fetchAllCloudData();
+            }
+        }
+
+        /* ------------------------------------------------------------- */
+        /*  إدارة المستخدمين والصلاحيات (Users & Roles Management)      */
+        /* ------------------------------------------------------------- */
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            dbCache.users.forEach(u => {
+                let roleLabel = '';
+                if (u.role === 'ADMIN') roleLabel = '<span class="badge badge-purple"><i class="fa-solid fa-user-shield"></i> مدير نظام</span>';
+                else if (u.role === 'TESTER') roleLabel = '<span class="badge badge-warning"><i class="fa-solid fa-flask"></i> فني مختبر</span>';
+                else roleLabel = '<span class="badge badge-secondary"><i class="fa-solid fa-eye"></i> مستعرض</span>';
+
+                tbody.innerHTML += `<tr>
+                    <td><strong>${u.username}</strong></td>
+                    <td>${u.fullname}</td>
+                    <td>${roleLabel}</td>
+                    <td>${u.createdAt || '-'}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editUser('${u.docId}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                        <button class="btn btn-danger btn-sm" onclick="handleDeleteUser('${u.docId}')"><i class="fa-solid fa-trash"></i> حذف</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        window.handleSaveUser = async function(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بإدارة المستخدمين!');
+
+            const docId = document.getElementById('edit-user-doc-id').value;
+            const username = document.getElementById('user-username').value.trim();
+            const fullname = document.getElementById('user-fullname').value.trim();
+            const password = document.getElementById('user-password').value.trim();
+            const role = document.getElementById('user-role').value;
+
+            const userData = {
+                username,
+                fullname,
+                password,
+                role,
+                updatedAt: new Date().toISOString().split('T')[0]
+            };
+
+            if (docId) {
+                // تعديل مستخدم موجود
+                await window.FB.updateDoc(window.FB.doc(window.FB.db, "users", docId), userData);
+                alert('تم تحديث بيانات المستخدم بنجاح!');
+            } else {
+                // إضافة مستخدم جديد
+                userData.createdAt = new Date().toISOString().split('T')[0];
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "users"), userData);
+                alert('تم إنشاء المستخدم الجديد بنجاح!');
+            }
+
+            resetUserForm();
+            await fetchAllCloudData();
+        }
+
+        window.editUser = function(docId) {
+            const u = dbCache.users.find(user => user.docId === docId);
+            if (!u) return;
+
+            document.getElementById('edit-user-doc-id').value = u.docId;
+            document.getElementById('user-username').value = u.username;
+            document.getElementById('user-fullname').value = u.fullname;
+            document.getElementById('user-password').value = u.password;
+            document.getElementById('user-role').value = u.role;
+
+            document.getElementById('user-form-title').innerHTML = '<i class="fa-solid fa-user-pen"></i> تعديل بيانات المستخدم';
+        }
+
+        window.handleDeleteUser = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالحذف!');
+            if (confirm('هل أنت تأكد من حذف هذا المستخدم؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.doc(window.FB.db, "users", docId)));
+                await fetchAllCloudData();
+                alert('تم حذف المستخدم بنجاح.');
+            }
+        }
+
+        window.resetUserForm = function() {
+            document.getElementById('user-form').reset();
+            document.getElementById('edit-user-doc-id').value = '';
+            document.getElementById('user-form-title').innerHTML = '<i class="fa-solid fa-user-plus"></i> إضافة مستخدم جديد للنظام';
+        }
+
+        window.openModal = function(id) { document.getElementById(id).classList.add('active'); }
+        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); }
+    </script>
+</body>
+</html>
