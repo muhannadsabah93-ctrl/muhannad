@@ -543,7 +543,7 @@
                         <div class="card-header">
                             <div class="card-title"><i class="fa-solid fa-building" style="color: var(--primary);"></i> إدارة الشركات المتعاقدة</div>
                         </div>
-                        <form onsubmit="handleAddCompany(event)" class="admin-only" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <form onsubmit="handleAddCompany(event)" class="tester-only" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
                             <input type="text" id="new-company-name" class="form-control" placeholder="اسم الشركة الجديد..." required>
                             <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة</button>
                         </form>
@@ -559,7 +559,7 @@
                         <div class="card-header">
                             <div class="card-title"><i class="fa-solid fa-location-dot" style="color: var(--warning);"></i> إدارة المواقع التابعة</div>
                         </div>
-                        <form onsubmit="handleAddSite(event)" class="admin-only" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                        <form onsubmit="handleAddSite(event)" class="tester-only" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
                             <select id="new-site-company" class="form-control" required><option value="">اختر الشركة...</option></select>
                             <div style="display: flex; gap: 0.5rem;">
                                 <input type="text" id="new-site-name" class="form-control" placeholder="اسم الموقع الجديد..." required>
@@ -702,7 +702,7 @@
                     </div>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت</th><th>ماء</th><th>مضافة</th><th>نتيجة 7 أيام</th><th>حالة 7 أيام</th><th>نتيجة 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="admin-only">خيارات</th></tr></thead>
+                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت</th><th>ماء</th><th>مضافة</th><th>معدل 7 أيام</th><th>حالة 7 أيام</th><th>معدل 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="admin-only">خيارات</th></tr></thead>
                             <tbody id="general-log-table-body"></tbody>
                         </table>
                     </div>
@@ -738,7 +738,7 @@
                                 <label>مستوى الصلاحية (الدور)</label>
                                 <select id="user-role" class="form-control" required>
                                     <option value="ADMIN">مدير نظام (Admin) - كافة الصلاحيات</option>
-                                    <option value="TESTER">فني مختبر / مهندس (Tester) - إدخال نتائج وفحص</option>
+                                    <option value="TESTER">فني مختبر / مهندس (Tester) - إدخال نتائج وفحص وإضافة شركات/مواقع</option>
                                     <option value="VIEWER">مستعرض (Viewer) - قراءة واستعراض فقط</option>
                                 </select>
                             </div>
@@ -774,7 +774,7 @@
     <div id="test-result-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-vial-circle-check"></i> إدخال نتيجة فحص الكسر</h3>
+                <h3><i class="fa-solid fa-vial-circle-check"></i> إدخال نتائج فحص الكسر للمكعبات</h3>
                 <button class="btn btn-secondary" onclick="closeModal('test-result-modal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
@@ -786,16 +786,40 @@
                         <span>عمر الفحص: <strong id="tr-display-type"></strong></span> | 
                         <span>المقاومة المطلوبة: <strong id="tr-display-target" style="color: var(--warning);"></strong> MPa</span>
                     </div>
-                    <div class="form-grid">
-                        <div class="form-group"><label>تاريخ الكسر الفعلي</label><input type="date" id="tr-actual-date" class="form-control" required></div>
-                        <div class="form-group"><label>مقاومة الكسر الفعلية (MPa)</label><input type="number" step="0.1" id="tr-strength-result" class="form-control" required oninput="calculateTestCompliance()"></div>
+                    
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label>تاريخ الكسر الفعلي</label>
+                        <input type="date" id="tr-actual-date" class="form-control" required>
                     </div>
+
+                    <h4 style="margin: 1rem 0 0.5rem 0; color: var(--primary); font-size: 0.95rem;">
+                        <i class="fa-solid fa-cubes"></i> نتائج فحص المكعبات الثلاثة (MPa)
+                    </h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>المكعب الأول</label>
+                            <input type="number" step="0.1" id="tr-cube-1" class="form-control" placeholder="0.0" required oninput="calculateTestCompliance()">
+                        </div>
+                        <div class="form-group">
+                            <label>المكعب الثاني</label>
+                            <input type="number" step="0.1" id="tr-cube-2" class="form-control" placeholder="0.0" required oninput="calculateTestCompliance()">
+                        </div>
+                        <div class="form-group">
+                            <label>المكعب الثالث</label>
+                            <input type="number" step="0.1" id="tr-cube-3" class="form-control" placeholder="0.0" required oninput="calculateTestCompliance()">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; text-align: center; font-size: 1rem;">
+                        المعدل المحسوب: <strong id="tr-avg-result" style="color: var(--primary); font-size: 1.2rem;">-</strong> MPa
+                    </div>
+
                     <div id="tr-compliance-box" style="margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; text-align: center; display: none;">
                         <h4 id="tr-compliance-text"></h4>
                         <p id="tr-compliance-diff"></p>
                     </div>
                     <div class="modal-footer" style="margin-top: 1rem;">
-                        <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-floppy-disk"></i> حفظ النتيجة للسحابة</button>
+                        <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-floppy-disk"></i> حفظ النتائج للسحابة</button>
                     </div>
                 </form>
             </div>
@@ -1033,7 +1057,7 @@
 
         window.handleAddCompany = async function(e) {
             e.preventDefault();
-            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بإجراء التعديل!');
+            if (currentUser.role !== 'ADMIN' && currentUser.role !== 'TESTER') return alert('غير مصرح لك بإجراء التعديل!');
             const name = document.getElementById('new-company-name').value.trim();
             if (name) {
                 await window.FB.addDoc(window.FB.collection(window.FB.db, "companies"), { name });
@@ -1062,7 +1086,7 @@
 
         window.handleAddSite = async function(e) {
             e.preventDefault();
-            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بإجراء التعديل!');
+            if (currentUser.role !== 'ADMIN' && currentUser.role !== 'TESTER') return alert('غير مصرح لك بإجراء التعديل!');
             const companyId = document.getElementById('new-site-company').value;
             const name = document.getElementById('new-site-name').value.trim();
             if (companyId && name) {
@@ -1196,8 +1220,8 @@
                 water: parseFloat(document.getElementById('mix-water').value),
                 notes: document.getElementById('mix-notes').value,
                 tests: {
-                    day7: { dueDate: d7.toISOString().split('T')[0], status: 'PENDING', actualDate: null, result: null, isPassed: null },
-                    day28: { dueDate: d28.toISOString().split('T')[0], status: 'PENDING', actualDate: null, result: null, isPassed: null }
+                    day7: { dueDate: d7.toISOString().split('T')[0], status: 'PENDING', actualDate: null, cube1: null, cube2: null, cube3: null, result: null, isPassed: null },
+                    day28: { dueDate: d28.toISOString().split('T')[0], status: 'PENDING', actualDate: null, cube1: null, cube2: null, cube3: null, result: null, isPassed: null }
                 }
             };
 
@@ -1271,7 +1295,12 @@
             document.getElementById('tr-display-type').innerText = type === 'day7' ? '7 أيام' : '28 يوماً';
             document.getElementById('tr-display-target').innerText = mix.targetStrength;
             document.getElementById('tr-actual-date').value = test.actualDate || new Date().toISOString().split('T')[0];
-            document.getElementById('tr-strength-result').value = test.result || '';
+            
+            // تعبئة حقول المكعبات الثلاثة
+            document.getElementById('tr-cube-1').value = test.cube1 !== undefined && test.cube1 !== null ? test.cube1 : '';
+            document.getElementById('tr-cube-2').value = test.cube2 !== undefined && test.cube2 !== null ? test.cube2 : '';
+            document.getElementById('tr-cube-3').value = test.cube3 !== undefined && test.cube3 !== null ? test.cube3 : '';
+
             calculateTestCompliance();
             openModal('test-result-modal');
         }
@@ -1279,22 +1308,35 @@
         window.calculateTestCompliance = function() {
             const docId = document.getElementById('tr-mix-doc-id').value;
             const mix = dbCache.mixes.find(m => m.docId === docId);
-            const valInput = parseFloat(document.getElementById('tr-strength-result').value);
+
+            const c1 = parseFloat(document.getElementById('tr-cube-1').value);
+            const c2 = parseFloat(document.getElementById('tr-cube-2').value);
+            const c3 = parseFloat(document.getElementById('tr-cube-3').value);
+
+            const avgDisplay = document.getElementById('tr-avg-result');
             const box = document.getElementById('tr-compliance-box');
             const text = document.getElementById('tr-compliance-text');
             const diff = document.getElementById('tr-compliance-diff');
 
-            if (!mix || isNaN(valInput)) { box.style.display = 'none'; return; }
+            if (!mix || isNaN(c1) || isNaN(c2) || isNaN(c3)) {
+                avgDisplay.innerText = '-';
+                box.style.display = 'none';
+                return;
+            }
+
+            const avg = ((c1 + c2 + c3) / 3).toFixed(1);
+            avgDisplay.innerText = avg;
             box.style.display = 'block';
-            const difference = (valInput - mix.targetStrength).toFixed(1);
-            if (valInput >= mix.targetStrength) {
+
+            const difference = (avg - mix.targetStrength).toFixed(1);
+            if (parseFloat(avg) >= mix.targetStrength) {
                 box.style.background = 'rgba(34, 197, 94, 0.2)'; box.style.border = '1px solid var(--success)';
                 text.innerText = 'مستوفية للمواصفة الهندسية (PASSED)'; text.style.color = 'var(--success)';
-                diff.innerText = `أعلى من المطلوب بمقدار +${difference} MPa`;
+                diff.innerText = `المعدل أعلى من المطلوب بمقدار +${difference} MPa`;
             } else {
                 box.style.background = 'rgba(239, 68, 68, 0.2)'; box.style.border = '1px solid var(--danger)';
                 text.innerText = 'غير مستوفية للمواصفة (FAILED)'; text.style.color = 'var(--danger)';
-                diff.innerText = `أقل من المقاومة المطلوبة بمقدار ${difference} MPa`;
+                diff.innerText = `المعدل أقل من المقاومة المطلوبة بمقدار ${difference} MPa`;
             }
         }
 
@@ -1305,19 +1347,32 @@
             const docId = document.getElementById('tr-mix-doc-id').value;
             const type = document.getElementById('tr-test-type').value;
             const actualDate = document.getElementById('tr-actual-date').value;
-            const resultVal = parseFloat(document.getElementById('tr-strength-result').value);
+
+            const c1 = parseFloat(document.getElementById('tr-cube-1').value);
+            const c2 = parseFloat(document.getElementById('tr-cube-2').value);
+            const c3 = parseFloat(document.getElementById('tr-cube-3').value);
+
+            if (isNaN(c1) || isNaN(c2) || isNaN(c3)) {
+                alert('الرجاء إدخال نتائج كافة المكعبات الثلاثة بشكل صحيح!');
+                return;
+            }
+
+            const avgResult = parseFloat(((c1 + c2 + c3) / 3).toFixed(1));
 
             const mix = dbCache.mixes.find(m => m.docId === docId);
             if (mix && mix.tests) {
                 mix.tests[type].actualDate = actualDate;
-                mix.tests[type].result = resultVal;
+                mix.tests[type].cube1 = c1;
+                mix.tests[type].cube2 = c2;
+                mix.tests[type].cube3 = c3;
+                mix.tests[type].result = avgResult;
                 mix.tests[type].status = 'COMPLETED';
-                mix.tests[type].isPassed = resultVal >= mix.targetStrength;
+                mix.tests[type].isPassed = avgResult >= mix.targetStrength;
 
                 await window.FB.updateDoc(window.FB.doc(window.FB.db, "mixes", docId), { tests: mix.tests });
                 closeModal('test-result-modal');
                 await fetchAllCloudData();
-                alert('تم حفظ النتيجة في السحابة!');
+                alert('تم حفظ النتيجة والمكعبات الثلاثة في السحابة بنجاح!');
             }
         }
 
@@ -1348,8 +1403,8 @@
                         <td>${mix.companyName}<br><small>${mix.siteName}</small></td>
                         <td><span class="badge badge-secondary">${mix.codeName}</span></td>
                         <td>${mix.sand}</td><td>${mix.gravel}</td><td>${mix.cement}</td><td>${mix.water}</td><td>${mix.additive}</td>
-                        <td>${t7.result !== null ? t7.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t7)}</td>
-                        <td>${t28.result !== null ? t28.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t28)}</td>
+                        <td>${t7.result !== null && t7.result !== undefined ? t7.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t7)}</td>
+                        <td>${t28.result !== null && t28.result !== undefined ? t28.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t28)}</td>
                         <td>${overallBadge}</td>
                         ${actionTd}
                     </tr>`;
@@ -1446,7 +1501,7 @@
         window.handleDeleteUser = async function(docId) {
             if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالحذف!');
             if (confirm('هل أنت تأكد من حذف هذا المستخدم؟')) {
-                await window.FB.deleteDoc(window.FB.doc(window.FB.doc(window.FB.db, "users", docId)));
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "users", docId));
                 await fetchAllCloudData();
                 alert('تم حذف المستخدم بنجاح.');
             }
