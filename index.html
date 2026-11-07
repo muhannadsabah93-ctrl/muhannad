@@ -592,6 +592,40 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- إدارة أنواع الإسمنت -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-industry" style="color: var(--primary);"></i> إدارة أنواع الإسمنت</div>
+                        </div>
+                        <form onsubmit="handleAddCement(event)" class="tester-only" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <input type="text" id="new-cement-name" class="form-control" placeholder="نوع الإسمنت الجديد (مثل بورتلاندي مقا...).." required>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة</button>
+                        </form>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>نوع الإسمنت</th><th class="admin-only">الإجراءات</th></tr></thead>
+                                <tbody id="cements-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- إدارة أنواع المواد المضافة -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-flask" style="color: var(--warning);"></i> إدارة أنواع المواد المضافة</div>
+                        </div>
+                        <form onsubmit="handleAddAdditive(event)" class="tester-only" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <input type="text" id="new-additive-name" class="form-control" placeholder="نوع المادة المضافة الجديدة..." required>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة</button>
+                        </form>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>نوع المادة المضافة</th><th class="admin-only">الإجراءات</th></tr></thead>
+                                <tbody id="additives-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -640,8 +674,25 @@
                         <div class="form-grid">
                             <div class="form-group"><label>كمية الرمل (كغم / م³)</label><input type="number" step="0.1" id="mix-sand" class="form-control" required></div>
                             <div class="form-group"><label>كمية الحصى (كغم / م³)</label><input type="number" step="0.1" id="mix-gravel" class="form-control" required></div>
+                            
+                            <!-- كمية الإسمنت وبجوارها نوع الإسمنت -->
                             <div class="form-group"><label>كمية الإسمنت (كغم / م³)</label><input type="number" step="0.1" id="mix-cement" class="form-control" required></div>
-                            <div class="form-group"><label>كمية المادة المضافة (لتر / م³)</label><input type="number" step="0.01" id="mix-additive" class="form-control" required></div>
+                            <div class="form-group">
+                                <label>نوع الإسمنت</label>
+                                <select id="mix-cement-type" class="form-control" required>
+                                    <option value="">اختر نوع الإسمنت...</option>
+                                </select>
+                            </div>
+
+                            <!-- كمية المادة المضافة وبجوارها نوع المادة المضافة (غير إجباري) -->
+                            <div class="form-group"><label>كمية المادة المضافة (لتر / م³)</label><input type="number" step="0.01" id="mix-additive" class="form-control"></div>
+                            <div class="form-group">
+                                <label>نوع المادة المضافة (اختياري)</label>
+                                <select id="mix-additive-type" class="form-control">
+                                    <option value="">بدون مضافة / اختر النوع...</option>
+                                </select>
+                            </div>
+
                             <div class="form-group"><label>كمية الماء (لتر / م³)</label><input type="number" step="0.1" id="mix-water" class="form-control" required></div>
                         </div>
 
@@ -702,7 +753,7 @@
                     </div>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت</th><th>ماء</th><th>مضافة</th><th>معدل 7 أيام</th><th>حالة 7 أيام</th><th>معدل 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="admin-only">خيارات</th></tr></thead>
+                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت (النوع)</th><th>ماء</th><th>مضافة (النوع)</th><th>معدل 7 أيام</th><th>حالة 7 أيام</th><th>معدل 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="admin-only">خيارات</th></tr></thead>
                             <tbody id="general-log-table-body"></tbody>
                         </table>
                     </div>
@@ -853,8 +904,8 @@
 
     <!-- Application JavaScript Logic -->
     <script>
-        // كاش بيانات السحابة
-        let dbCache = { companies: [], sites: [], codes: [], mixes: [], users: [] };
+        // كاش بيانات السحابة (يشمل الآن cements و additives)
+        let dbCache = { companies: [], sites: [], codes: [], cements: [], additives: [], mixes: [], users: [] };
         let currentUser = null; // المستخدم المسجل حالياً
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -978,6 +1029,12 @@
                 const codeSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "codes"));
                 dbCache.codes = codeSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
 
+                const cementSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "cements"));
+                dbCache.cements = cementSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const additiveSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "additives"));
+                dbCache.additives = additiveSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
                 const mixSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "mixes"));
                 dbCache.mixes = mixSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
 
@@ -995,6 +1052,8 @@
             renderCompaniesTable();
             renderSitesTable();
             renderCodesTable();
+            renderCementsTable();
+            renderAdditivesTable();
             populateDropdowns();
             renderAlertsTable();
             renderGeneralLogTable();
@@ -1146,6 +1205,66 @@
             });
         }
 
+        // إدارة أنواع الإسمنت
+        window.handleAddCement = async function(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'ADMIN' && currentUser.role !== 'TESTER') return alert('غير مصرح لك بإجراء التعديل!');
+            const name = document.getElementById('new-cement-name').value.trim();
+            if (name) {
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "cements"), { name });
+                document.getElementById('new-cement-name').value = '';
+                await fetchAllCloudData();
+            }
+        }
+
+        window.handleDeleteCement = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالإجراء!');
+            if (confirm('حذف نوع الإسمنت هذا؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "cements", docId));
+                await fetchAllCloudData();
+            }
+        }
+
+        function renderCementsTable() {
+            const tbody = document.getElementById('cements-table-body');
+            tbody.innerHTML = '';
+            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+            dbCache.cements.forEach(cm => {
+                let actionsTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteCement('${cm.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                tbody.innerHTML += `<tr><td><strong>${cm.name}</strong></td>${actionsTd}</tr>`;
+            });
+        }
+
+        // إدارة أنواع المواد المضافة
+        window.handleAddAdditive = async function(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'ADMIN' && currentUser.role !== 'TESTER') return alert('غير مصرح لك بإجراء التعديل!');
+            const name = document.getElementById('new-additive-name').value.trim();
+            if (name) {
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "additives"), { name });
+                document.getElementById('new-additive-name').value = '';
+                await fetchAllCloudData();
+            }
+        }
+
+        window.handleDeleteAdditive = async function(docId) {
+            if (currentUser.role !== 'ADMIN') return alert('غير مصرح لك بالإجراء!');
+            if (confirm('حذف نوع المادة المضافة هذه؟')) {
+                await window.FB.deleteDoc(window.FB.doc(window.FB.db, "additives", docId));
+                await fetchAllCloudData();
+            }
+        }
+
+        function renderAdditivesTable() {
+            const tbody = document.getElementById('additives-table-body');
+            tbody.innerHTML = '';
+            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+            dbCache.additives.forEach(ad => {
+                let actionsTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteAdditive('${ad.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                tbody.innerHTML += `<tr><td><strong>${ad.name}</strong></td>${actionsTd}</tr>`;
+            });
+        }
+
         function populateDropdowns() {
             const sCompSelect = document.getElementById('new-site-company');
             sCompSelect.innerHTML = '<option value="">اختر الشركة...</option>';
@@ -1158,6 +1277,16 @@
             const mixCodeSelect = document.getElementById('mix-code');
             mixCodeSelect.innerHTML = '<option value="">اختر الرمز...</option>';
             dbCache.codes.forEach(c => mixCodeSelect.innerHTML += `<option value="${c.docId}">${c.name} (${c.target} MPa)</option>`);
+
+            // تعبئة أنواع الإسمنت
+            const mixCementTypeSelect = document.getElementById('mix-cement-type');
+            mixCementTypeSelect.innerHTML = '<option value="">اختر نوع الإسمنت...</option>';
+            dbCache.cements.forEach(cm => mixCementTypeSelect.innerHTML += `<option value="${cm.name}">${cm.name}</option>`);
+
+            // تعبئة أنواع المواد المضافة (غير إجباري)
+            const mixAdditiveTypeSelect = document.getElementById('mix-additive-type');
+            mixAdditiveTypeSelect.innerHTML = '<option value="">بدون مضافة / اختر النوع...</option>';
+            dbCache.additives.forEach(ad => mixAdditiveTypeSelect.innerHTML += `<option value="${ad.name}">${ad.name}</option>`);
 
             const filterComp = document.getElementById('filter-log-company');
             filterComp.innerHTML = '<option value="">جميع الشركات</option>';
@@ -1216,7 +1345,9 @@
                 sand: parseFloat(document.getElementById('mix-sand').value),
                 gravel: parseFloat(document.getElementById('mix-gravel').value),
                 cement: parseFloat(document.getElementById('mix-cement').value),
-                additive: parseFloat(document.getElementById('mix-additive').value),
+                cementType: document.getElementById('mix-cement-type').value,
+                additive: parseFloat(document.getElementById('mix-additive').value) || 0,
+                additiveType: document.getElementById('mix-additive-type').value || '-',
                 water: parseFloat(document.getElementById('mix-water').value),
                 notes: document.getElementById('mix-notes').value,
                 tests: {
@@ -1402,7 +1533,11 @@
                         <td>${mix.date}</td>
                         <td>${mix.companyName}<br><small>${mix.siteName}</small></td>
                         <td><span class="badge badge-secondary">${mix.codeName}</span></td>
-                        <td>${mix.sand}</td><td>${mix.gravel}</td><td>${mix.cement}</td><td>${mix.water}</td><td>${mix.additive}</td>
+                        <td>${mix.sand}</td>
+                        <td>${mix.gravel}</td>
+                        <td>${mix.cement} <small style="color:var(--text-muted);">(${mix.cementType || '-'})</small></td>
+                        <td>${mix.water}</td>
+                        <td>${mix.additive} <small style="color:var(--text-muted);">(${mix.additiveType || '-'})</small></td>
                         <td>${t7.result !== null && t7.result !== undefined ? t7.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t7)}</td>
                         <td>${t28.result !== null && t28.result !== undefined ? t28.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t28)}</td>
                         <td>${overallBadge}</td>
