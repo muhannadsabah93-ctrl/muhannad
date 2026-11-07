@@ -599,7 +599,7 @@
                             <div class="card-title"><i class="fa-solid fa-industry" style="color: var(--primary);"></i> إدارة أنواع الإسمنت</div>
                         </div>
                         <form onsubmit="handleAddCement(event)" class="tester-only" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                            <input type="text" id="new-cement-name" class="form-control" placeholder="نوع الإسمنت الجديد (مثل بورتلاندي مقا...).." required>
+                            <input type="text" id="new-cement-name" class="form-control" placeholder="نوع الإسمنت الجديد..." required>
                             <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة</button>
                         </form>
                         <div class="table-responsive">
@@ -629,14 +629,15 @@
                 </div>
             </div>
 
-            <!-- 2. TAB: Add Mix Form -->
+            <!-- 2. TAB: Add / Edit Mix Form -->
             <div id="tab-add-mix" class="tab-content">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title"><i class="fa-solid fa-flask-vial" style="color: var(--primary);"></i> إضافة نموذج خلطة خرسانية جديدة</div>
+                        <div class="card-title" id="mix-form-main-title"><i class="fa-solid fa-flask-vial" style="color: var(--primary);"></i> إضافة نموذج خلطة خرسانية جديدة</div>
                     </div>
                     
                     <form id="add-mix-form" onsubmit="handleSaveMix(event)">
+                        <input type="hidden" id="edit-mix-doc-id">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>رقم الفحص التلقائي</label>
@@ -675,7 +676,6 @@
                             <div class="form-group"><label>كمية الرمل (كغم / م³)</label><input type="number" step="0.1" id="mix-sand" class="form-control" required></div>
                             <div class="form-group"><label>كمية الحصى (كغم / م³)</label><input type="number" step="0.1" id="mix-gravel" class="form-control" required></div>
                             
-                            <!-- كمية الإسمنت وبجوارها نوع الإسمنت -->
                             <div class="form-group"><label>كمية الإسمنت (كغم / م³)</label><input type="number" step="0.1" id="mix-cement" class="form-control" required></div>
                             <div class="form-group">
                                 <label>نوع الإسمنت</label>
@@ -684,7 +684,6 @@
                                 </select>
                             </div>
 
-                            <!-- كمية المادة المضافة وبجوارها نوع المادة المضافة (غير إجباري) -->
                             <div class="form-group"><label>كمية المادة المضافة (لتر / م³)</label><input type="number" step="0.01" id="mix-additive" class="form-control"></div>
                             <div class="form-group">
                                 <label>نوع المادة المضافة (اختياري)</label>
@@ -702,7 +701,7 @@
                         </div>
 
                         <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
-                            <button type="button" class="btn btn-secondary" onclick="resetMixForm()"><i class="fa-solid fa-rotate-right"></i> تفريغ</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetMixForm()"><i class="fa-solid fa-rotate-right"></i> تفريغ / إلغاء التعديل</button>
                             <button type="submit" class="btn btn-success" style="padding: 0.75rem 2.5rem;"><i class="fa-solid fa-floppy-disk"></i> حفظ الخلطة للسحابة</button>
                         </div>
                     </form>
@@ -726,7 +725,7 @@
                     </div>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>رقم الفحص</th><th>الشركة والموقع</th><th>رمز الكونكريت</th><th>عمر الفحص</th><th>تاريخ الاستحقاق</th><th>الحالة</th><th>الأيام المتبقية</th><th class="tester-only">الإجراءات</th></tr></thead>
+                            <thead><tr><th>رقم الفحص</th><th>الشركة والموقع</th><th>رمز الكونكريت</th><th>عمر الفحص</th><th>تاريخ الاستحقاق</th><th>الحالة</th><th>الأيام المتبقية</th><th class="tester-only">الإجراءات والنتائج</th></tr></thead>
                             <tbody id="alerts-table-body"></tbody>
                         </table>
                     </div>
@@ -753,7 +752,7 @@
                     </div>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت (النوع)</th><th>ماء</th><th>مضافة (النوع)</th><th>معدل 7 أيام</th><th>حالة 7 أيام</th><th>معدل 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="admin-only">خيارات</th></tr></thead>
+                            <thead><tr><th>رقم الفحص</th><th>تاريخ الخلط</th><th>الشركة / الموقع</th><th>الرمز</th><th>رمل</th><th>حصى</th><th>إسمنت (النوع)</th><th>ماء</th><th>مضافة (النوع)</th><th>معدل 7 أيام</th><th>حالة 7 أيام</th><th>معدل 28 يوماً</th><th>حالة 28 يوماً</th><th>الحالة العامة</th><th class="tester-only">الإجراءات</th></tr></thead>
                             <tbody id="general-log-table-body"></tbody>
                         </table>
                     </div>
@@ -904,9 +903,8 @@
 
     <!-- Application JavaScript Logic -->
     <script>
-        // كاش بيانات السحابة (يشمل الآن cements و additives)
         let dbCache = { companies: [], sites: [], codes: [], cements: [], additives: [], mixes: [], users: [] };
-        let currentUser = null; // المستخدم المسجل حالياً
+        let currentUser = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedSession = sessionStorage.getItem('qaleb_user_session');
@@ -920,7 +918,6 @@
             prepareAddMixForm();
         });
 
-        // تسجيل الدخول مع التحقق من بيانات المستخدمين السحابية + حساب الـ Admin الاحتياطي
         window.handleLogin = async function(e) {
             e.preventDefault();
             const userInput = document.getElementById('login-username').value.trim();
@@ -929,7 +926,6 @@
 
             errDiv.style.display = 'none';
 
-            // 1. حساب المسؤول الافتراضي الاحتياطي
             if (userInput === "admin" && passInput === "1993") {
                 currentUser = {
                     username: "admin",
@@ -941,7 +937,6 @@
                 return;
             }
 
-            // 2. التحقق من السحابة في مجموعة المستخدمين
             try {
                 if (window.FB && window.FB.db) {
                     const usersSnap = await window.FB.getDocs(window.FB.collection(window.FB.db, "users"));
@@ -984,7 +979,6 @@
             switchTab('dashboard');
         }
 
-        // تطبيق الصلاحيات على العناصر البرمجية والواجهة (Role Based Access Control)
         function applyRolePermissionsUI() {
             if (!currentUser) return;
 
@@ -1002,7 +996,6 @@
                 roleBadge.className = 'badge badge-secondary';
             }
 
-            // إخفاء أو إظهار العناصر بحسب الدور
             const isAdmin = currentUser.role === 'ADMIN';
             const isTesterOrAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'TESTER';
 
@@ -1015,7 +1008,6 @@
             });
         }
 
-        // جلب البيانات من Firestore السحابي
         async function fetchAllCloudData() {
             try {
                 if (!window.FB || !window.FB.db) return;
@@ -1061,7 +1053,6 @@
         }
 
         window.switchTab = function(tabId) {
-            // التحقق من الصلاحيات للتبويب
             if (tabId === 'users' && currentUser.role !== 'ADMIN') {
                 alert('عذراً، هذا التبويب مخصص لمسؤولي النظام فقط.');
                 return;
@@ -1078,7 +1069,10 @@
             
             const btns = document.querySelectorAll('.tab-btn');
             if(tabId === 'dashboard') btns[0].classList.add('active');
-            if(tabId === 'add-mix') { btns[1].classList.add('active'); prepareAddMixForm(); }
+            if(tabId === 'add-mix') { 
+                btns[1].classList.add('active'); 
+                if(!document.getElementById('edit-mix-doc-id').value) prepareAddMixForm(); 
+            }
             if(tabId === 'alerts') btns[2].classList.add('active');
             if(tabId === 'general-log') btns[3].classList.add('active');
             if(tabId === 'users') document.getElementById('nav-users-tab').classList.add('active');
@@ -1205,7 +1199,6 @@
             });
         }
 
-        // إدارة أنواع الإسمنت
         window.handleAddCement = async function(e) {
             e.preventDefault();
             if (currentUser.role !== 'ADMIN' && currentUser.role !== 'TESTER') return alert('غير مصرح لك بإجراء التعديل!');
@@ -1235,7 +1228,6 @@
             });
         }
 
-        // إدارة أنواع المواد المضافة
         window.handleAddAdditive = async function(e) {
             e.preventDefault();
             if (currentUser.role !== 'ADMIN' && currentUser.role !== 'TESTER') return alert('غير مصرح لك بإجراء التعديل!');
@@ -1278,12 +1270,10 @@
             mixCodeSelect.innerHTML = '<option value="">اختر الرمز...</option>';
             dbCache.codes.forEach(c => mixCodeSelect.innerHTML += `<option value="${c.docId}">${c.name} (${c.target} MPa)</option>`);
 
-            // تعبئة أنواع الإسمنت
             const mixCementTypeSelect = document.getElementById('mix-cement-type');
             mixCementTypeSelect.innerHTML = '<option value="">اختر نوع الإسمنت...</option>';
             dbCache.cements.forEach(cm => mixCementTypeSelect.innerHTML += `<option value="${cm.name}">${cm.name}</option>`);
 
-            // تعبئة أنواع المواد المضافة (غير إجباري)
             const mixAdditiveTypeSelect = document.getElementById('mix-additive-type');
             mixAdditiveTypeSelect.innerHTML = '<option value="">بدون مضافة / اختر النوع...</option>';
             dbCache.additives.forEach(ad => mixAdditiveTypeSelect.innerHTML += `<option value="${ad.name}">${ad.name}</option>`);
@@ -1309,16 +1299,59 @@
         }
 
         function prepareAddMixForm() {
+            document.getElementById('edit-mix-doc-id').value = '';
+            document.getElementById('mix-form-main-title').innerHTML = '<i class="fa-solid fa-flask-vial" style="color: var(--primary);"></i> إضافة نموذج خلطة خرسانية جديدة';
             const today = new Date();
             document.getElementById('mix-id').value = 'MIX-' + Math.floor(100000 + Math.random() * 900000);
             document.getElementById('mix-date').value = today.toISOString().split('T')[0];
             document.getElementById('mix-time').value = today.toTimeString().split(' ')[0].substring(0, 5);
         }
 
+        // الانتقال لنموذج التعديل وتعبئة البيانات
+        window.editMixRecord = function(docId) {
+            if (currentUser.role === 'VIEWER') return alert('عذراً، ليس لديك صلاحية التعديل.');
+            const mix = dbCache.mixes.find(m => m.docId === docId);
+            if (!mix) return;
+
+            document.getElementById('edit-mix-doc-id').value = mix.docId;
+            document.getElementById('mix-form-main-title').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--warning);"></i> تعديل الخلطة الخرسانية: <strong>${mix.id}</strong>`;
+            
+            document.getElementById('mix-id').value = mix.id;
+            document.getElementById('mix-date').value = mix.date;
+            document.getElementById('mix-time').value = mix.time;
+
+            // تحديد الشركة وإشعال تحديث المواقع التابعة لها
+            const comp = dbCache.companies.find(c => c.name === mix.companyName);
+            if (comp) {
+                document.getElementById('mix-company').value = comp.docId;
+                updateSiteDropdownForMix();
+                document.getElementById('mix-site').value = mix.siteName;
+            }
+
+            // تحديد رمز الكونكريت
+            const code = dbCache.codes.find(c => c.name === mix.codeName);
+            if (code) {
+                document.getElementById('mix-code').value = code.docId;
+            }
+
+            document.getElementById('mix-material-name').value = mix.materialName || '';
+            document.getElementById('mix-sand').value = mix.sand;
+            document.getElementById('mix-gravel').value = mix.gravel;
+            document.getElementById('mix-cement').value = mix.cement;
+            document.getElementById('mix-cement-type').value = mix.cementType || '';
+            document.getElementById('mix-additive').value = mix.additive || '';
+            document.getElementById('mix-additive-type').value = mix.additiveType || '';
+            document.getElementById('mix-water').value = mix.water;
+            document.getElementById('mix-notes').value = mix.notes || '';
+
+            switchTab('add-mix');
+        }
+
         window.handleSaveMix = async function(e) {
             e.preventDefault();
-            if (currentUser.role === 'VIEWER') return alert('غير مصرح لك بإضافة الخلطات!');
+            if (currentUser.role === 'VIEWER') return alert('غير مصرح لك بإضافة أو تعديل الخلطات!');
 
+            const docId = document.getElementById('edit-mix-doc-id').value;
             const mixId = document.getElementById('mix-id').value;
             const mixDate = document.getElementById('mix-date').value;
             const mixTime = document.getElementById('mix-time').value;
@@ -1330,10 +1363,7 @@
             const codeId = document.getElementById('mix-code').value;
             const codeObj = dbCache.codes.find(c => c.docId === codeId);
 
-            const d7 = new Date(mixDate); d7.setDate(d7.getDate() + 7);
-            const d28 = new Date(mixDate); d28.setDate(d28.getDate() + 28);
-
-            const newMix = {
+            const mixData = {
                 id: mixId,
                 date: mixDate,
                 time: mixTime,
@@ -1349,15 +1379,26 @@
                 additive: parseFloat(document.getElementById('mix-additive').value) || 0,
                 additiveType: document.getElementById('mix-additive-type').value || '-',
                 water: parseFloat(document.getElementById('mix-water').value),
-                notes: document.getElementById('mix-notes').value,
-                tests: {
-                    day7: { dueDate: d7.toISOString().split('T')[0], status: 'PENDING', actualDate: null, cube1: null, cube2: null, cube3: null, result: null, isPassed: null },
-                    day28: { dueDate: d28.toISOString().split('T')[0], status: 'PENDING', actualDate: null, cube1: null, cube2: null, cube3: null, result: null, isPassed: null }
-                }
+                notes: document.getElementById('mix-notes').value
             };
 
-            await window.FB.addDoc(window.FB.collection(window.FB.db, "mixes"), newMix);
-            alert('تم حفظ الخلطة بنجاح في السحابة!');
+            if (docId) {
+                // تحديث سجل موجود
+                await window.FB.updateDoc(window.FB.doc(window.FB.db, "mixes", docId), mixData);
+                alert('تم تحديث الخلطة الخرسانية بنجاح!');
+            } else {
+                // إنشاء سجل جديد مع إضافة تواريخ الفحص الافتراضية 7 و 28 يوم
+                const d7 = new Date(mixDate); d7.setDate(d7.getDate() + 7);
+                const d28 = new Date(mixDate); d28.setDate(d28.getDate() + 28);
+
+                mixData.tests = {
+                    day7: { dueDate: d7.toISOString().split('T')[0], status: 'PENDING', actualDate: null, cube1: null, cube2: null, cube3: null, result: null, isPassed: null },
+                    day28: { dueDate: d28.toISOString().split('T')[0], status: 'PENDING', actualDate: null, cube1: null, cube2: null, cube3: null, result: null, isPassed: null }
+                };
+                await window.FB.addDoc(window.FB.collection(window.FB.db, "mixes"), mixData);
+                alert('تم حفظ الخلطة الجديدة بنجاح في السحابة!');
+            }
+
             resetMixForm();
             await fetchAllCloudData();
             switchTab('general-log');
@@ -1398,7 +1439,13 @@
 
                     if (include) {
                         let daysText = test.status === 'COMPLETED' ? '-' : (diffDays < 0 ? `متأخر ${Math.abs(diffDays)} يوم` : (diffDays === 0 ? 'اليوم' : `متبقي ${diffDays} يوم`));
-                        let actionTd = canEdit ? `<td><button class="btn btn-warning btn-sm" onclick="openTestModal('${mix.docId}', '${type}')"><i class="fa-solid fa-vial"></i> نتيجة الفحص</button></td>` : '';
+                        
+                        // زر التعديل بجوار اسم الخلطة/الفحص وزر إدخال النتيجة
+                        let actionTd = canEdit ? `
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="openTestModal('${mix.docId}', '${type}')"><i class="fa-solid fa-vial"></i> نتيجة الفحص</button>
+                                <button class="btn btn-secondary btn-sm" onclick="editMixRecord('${mix.docId}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                            </td>` : '';
                         
                         tbody.innerHTML += `<tr>
                             <td><strong>${mix.id}</strong></td>
@@ -1427,7 +1474,6 @@
             document.getElementById('tr-display-target').innerText = mix.targetStrength;
             document.getElementById('tr-actual-date').value = test.actualDate || new Date().toISOString().split('T')[0];
             
-            // تعبئة حقول المكعبات الثلاثة
             document.getElementById('tr-cube-1').value = test.cube1 !== undefined && test.cube1 !== null ? test.cube1 : '';
             document.getElementById('tr-cube-2').value = test.cube2 !== undefined && test.cube2 !== null ? test.cube2 : '';
             document.getElementById('tr-cube-3').value = test.cube3 !== undefined && test.cube3 !== null ? test.cube3 : '';
@@ -1513,7 +1559,7 @@
             const search = document.getElementById('search-log-input').value.toLowerCase();
             const filterComp = document.getElementById('filter-log-company').value;
             const filterCode = document.getElementById('filter-log-code').value;
-            const isAdmin = currentUser && currentUser.role === 'ADMIN';
+            const isTesterOrAdmin = currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'TESTER');
 
             dbCache.mixes.forEach(mix => {
                 if (!mix.tests) return;
@@ -1526,7 +1572,12 @@
                 if ((mix.id.toLowerCase().includes(search) || mix.companyName.toLowerCase().includes(search)) &&
                     (!filterComp || mix.companyName === filterComp) && (!filterCode || mix.codeName === filterCode)) {
                     
-                    let actionTd = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="handleDeleteMix('${mix.docId}')"><i class="fa-solid fa-trash"></i></button></td>` : '';
+                    // زر التعديل وزر الحذف في الجدول العام
+                    let actionTd = isTesterOrAdmin ? `
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editMixRecord('${mix.docId}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                            ${currentUser.role === 'ADMIN' ? `<button class="btn btn-danger btn-sm" onclick="handleDeleteMix('${mix.docId}')"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        </td>` : '';
                     
                     tbody.innerHTML += `<tr>
                         <td><strong>${mix.id}</strong></td>
@@ -1559,10 +1610,6 @@
                 await fetchAllCloudData();
             }
         }
-
-        /* ------------------------------------------------------------- */
-        /*  إدارة المستخدمين والصلاحيات (Users & Roles Management)      */
-        /* ------------------------------------------------------------- */
 
         function renderUsersTable() {
             const tbody = document.getElementById('users-table-body');
@@ -1606,11 +1653,9 @@
             };
 
             if (docId) {
-                // تعديل مستخدم موجود
                 await window.FB.updateDoc(window.FB.doc(window.FB.db, "users", docId), userData);
                 alert('تم تحديث بيانات المستخدم بنجاح!');
             } else {
-                // إضافة مستخدم جديد
                 userData.createdAt = new Date().toISOString().split('T')[0];
                 await window.FB.addDoc(window.FB.collection(window.FB.db, "users"), userData);
                 alert('تم إنشاء المستخدم الجديد بنجاح!');
