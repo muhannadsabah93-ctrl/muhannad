@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الفحص الخاص بمعامل القالب للخرسانة الجاهزة - نظام إدارة المستخدمين الصلاحيات</title>
+    <title>نظام الفحص الخاص بمعامل القالب للخرسانة الجاهزة - نظام إدارة المستخدمين والصلاحيات</title>
     <!-- Cairo Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -444,7 +444,7 @@
             </form>
             <div id="login-error" style="color: var(--danger); margin-top: 1rem; font-size: 0.85rem; display: none;"></div>
             
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); text-size-adjust: auto; font-size: 0.75rem; color: var(--text-muted);">
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); font-size: 0.75rem; color: var(--text-muted);">
                 حساب المسؤول الافتراضي: <strong>admin</strong> / كلمة المرور: <strong>1993</strong>
             </div>
         </div>
@@ -621,8 +621,8 @@
                                 <select id="mix-company" class="form-control" required onchange="updateSiteDropdownForMix()"><option value="">اختر الشركة...</option></select>
                             </div>
                             <div class="form-group">
-                                <label>اسم الموقع</label>
-                                <select id="mix-site" class="form-control" required><option value="">اختر الموقع...</option></select>
+                                <label>اسم الموقع (اختياري)</label>
+                                <select id="mix-site" class="form-control"><option value="">اختر الموقع (اختياري)...</option></select>
                             </div>
                             <div class="form-group">
                                 <label>رمز الكونكريت</label>
@@ -878,7 +878,7 @@
 
             errDiv.style.display = 'none';
 
-            // 1. حساب المسؤول الافتراضي الاحتياطي (تم تعديل كلمة المرور إلى 1993)
+            // 1. حساب المسؤول الافتراضي الاحتياطي
             if (userInput === "admin" && passInput === "1993") {
                 currentUser = {
                     username: "admin",
@@ -1171,7 +1171,7 @@
         window.updateSiteDropdownForMix = function() {
             const compId = document.getElementById('mix-company').value;
             const siteSelect = document.getElementById('mix-site');
-            siteSelect.innerHTML = '<option value="">اختر الموقع...</option>';
+            siteSelect.innerHTML = '<option value="">اختر الموقع (اختياري)...</option>';
             if (compId) {
                 dbCache.sites.filter(s => s.companyId === compId).forEach(s => {
                     siteSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
@@ -1196,7 +1196,7 @@
             
             const compId = document.getElementById('mix-company').value;
             const companyObj = dbCache.companies.find(c => c.docId === compId);
-            const siteName = document.getElementById('mix-site').value;
+            const siteName = document.getElementById('mix-site').value || '-';
             
             const codeId = document.getElementById('mix-code').value;
             const codeObj = dbCache.codes.find(c => c.docId === codeId);
