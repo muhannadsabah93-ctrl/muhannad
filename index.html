@@ -153,7 +153,7 @@
         .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: var(--border-color); }
         .btn-block { width: 100%; }
-        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.825rem; }
+        .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.8rem; }
 
         header {
             background: var(--bg-surface);
@@ -237,7 +237,7 @@
         main {
             flex: 1;
             padding: 2rem;
-            max-width: 1600px;
+            max-width: 1650px;
             width: 100%;
             margin: 0 auto;
         }
@@ -324,6 +324,7 @@
         .table-responsive {
             width: 100%;
             overflow-x: auto;
+            overflow-y: visible;
         }
 
         table {
@@ -337,6 +338,7 @@
             padding: 0.85rem 1rem;
             border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
+            vertical-align: middle;
         }
 
         th {
@@ -360,6 +362,108 @@
         .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
         .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); border: 1px solid var(--purple); }
         .badge-secondary { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+        /* تنسيق خلية الفحص داخل جدول التنبيهات الموحد */
+        .alert-age-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            background: rgba(15, 23, 42, 0.45);
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            min-width: 215px;
+        }
+        .alert-age-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+        }
+        .alert-age-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        /* Tooltip للمكعبات الثلاثة في الجدول العام */
+        .cube-tooltip-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            cursor: help;
+            padding: 0.25rem 0.55rem;
+            border-radius: 0.35rem;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px dashed rgba(59, 130, 246, 0.5);
+            font-weight: 700;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .cube-tooltip-wrapper:hover {
+            background: rgba(59, 130, 246, 0.22);
+            border-color: var(--primary);
+        }
+        .cube-tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 50%;
+            transform: translateX(50%) translateY(4px);
+            background: #0b1120;
+            color: var(--text-main);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 0.7rem 0.9rem;
+            min-width: 195px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75);
+            z-index: 500;
+            text-align: right;
+            font-size: 0.82rem;
+            font-weight: 400;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+        }
+        .cube-tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            right: 50%;
+            transform: translateX(50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--primary) transparent transparent transparent;
+        }
+        .cube-tooltip-wrapper:hover .cube-tooltip-box {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(50%) translateY(0);
+        }
+        .cube-tooltip-title {
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .cube-tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.18rem 0;
+            color: var(--text-muted);
+        }
+        .cube-tooltip-row strong {
+            color: var(--text-main);
+            font-weight: 700;
+        }
 
         .modal-overlay {
             position: fixed;
@@ -708,7 +812,7 @@
                 </div>
             </div>
 
-            <!-- 3. TAB: Alerts -->
+            <!-- 3. TAB: Alerts (صف واحد لكل زبون/خلطة: 7 أيام و 28 يوماً جنباً إلى جنب) -->
             <div id="tab-alerts" class="tab-content">
                 <div class="card">
                     <div class="card-header">
@@ -720,12 +824,21 @@
                             <option value="DUE">المستحقة اليوم</option>
                             <option value="OVERDUE">المتأخرة</option>
                             <option value="UPCOMING">القادمة</option>
-                            <option value="COMPLETED">المكتملة (أرشيف)</option>
+                            <option value="COMPLETED">المكتملة بالكامل (أرشيف)</option>
                         </select>
                     </div>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>رقم الفحص</th><th>اسم الزبون والموقع</th><th>رمز الكونكريت</th><th>عمر الفحص</th><th>تاريخ الاستحقاق</th><th>الحالة</th><th>الأيام المتبقية</th><th class="tester-only">الإجراءات والنتائج</th></tr></thead>
+                            <thead>
+                                <tr>
+                                    <th>رقم الفحص</th>
+                                    <th>اسم الزبون والموقع</th>
+                                    <th>رمز الكونكريت</th>
+                                    <th>فحص 7 أيام (الموعد / المتبقي / النتيجة)</th>
+                                    <th>فحص 28 يوماً (الموعد / المتبقي / النتيجة)</th>
+                                    <th class="tester-only">تعديل الخلطة</th>
+                                </tr>
+                            </thead>
                             <tbody id="alerts-table-body"></tbody>
                         </table>
                     </div>
@@ -1462,7 +1575,53 @@
             prepareAddMixForm();
         }
 
-        // دالة التنبيهات المعدلة لتخفي العناصر المكتملة تلقائياً
+        // دالة مساعدة لتوليد خلية عمر الفحص (7 أيام أو 28 يوماً) داخل صف الزبون الواحد
+        function buildAlertAgeCell(mix, type, today, canEdit) {
+            const test = mix.tests ? mix.tests[type] : null;
+            if (!test) return '<span style="color: var(--text-muted);">-</span>';
+
+            const diffDays = Math.ceil((new Date(test.dueDate) - new Date(today)) / (1000 * 60 * 60 * 24));
+            let statusBadge = '';
+            let timeInfo = '';
+
+            if (test.status === 'COMPLETED') {
+                const resClass = test.isPassed ? 'badge-success' : 'badge-danger';
+                const resText = test.isPassed ? 'مستوفية' : 'غير مستوفية';
+                statusBadge = `<span class="badge ${resClass}">${test.result} MPa (${resText})</span>`;
+                timeInfo = `<span style="color: var(--text-muted); font-size: 0.78rem;"><i class="fa-solid fa-calendar-check"></i> كُسر: ${test.actualDate || test.dueDate}</span>`;
+            } else if (test.dueDate === today) {
+                statusBadge = `<span class="badge badge-warning">مستحق اليوم</span>`;
+                timeInfo = `<span style="color: var(--warning); font-weight: 700; font-size: 0.8rem;">اليوم</span>`;
+            } else if (test.dueDate < today) {
+                statusBadge = `<span class="badge badge-danger">متأخر</span>`;
+                timeInfo = `<span style="color: var(--danger); font-weight: 700; font-size: 0.8rem;">متأخر ${Math.abs(diffDays)} يوم</span>`;
+            } else {
+                statusBadge = `<span class="badge badge-secondary">قادم</span>`;
+                timeInfo = `<span style="color: var(--text-muted); font-size: 0.8rem;">متبقي ${diffDays} يوم</span>`;
+            }
+
+            const btnText = test.status === 'COMPLETED' ? 'تعديل النتيجة' : 'نتيجة الفحص';
+            const btnClass = test.status === 'COMPLETED' ? 'btn-secondary' : 'btn-warning';
+            const actionBtn = canEdit ? `
+                <button class="btn ${btnClass} btn-sm" onclick="openTestModal('${mix.docId}', '${type}')">
+                    <i class="fa-solid fa-vial"></i> ${btnText}
+                </button>` : '';
+
+            return `
+                <div class="alert-age-box">
+                    <div class="alert-age-top">
+                        <span><i class="fa-regular fa-calendar"></i> ${test.dueDate}</span>
+                        ${timeInfo}
+                    </div>
+                    <div class="alert-age-bottom">
+                        ${statusBadge}
+                        ${actionBtn}
+                    </div>
+                </div>
+            `;
+        }
+
+        // دالة التنبيهات: صف واحد لكل زبون/خلطة يعرض 7 أيام و 28 يوماً جنباً إلى جنب
         function renderAlertsTable() {
             const tbody = document.getElementById('alerts-table-body');
             tbody.innerHTML = '';
@@ -1472,64 +1631,46 @@
 
             dbCache.mixes.forEach(mix => {
                 if (!mix.tests) return;
-                ['day7', 'day28'].forEach(type => {
-                    const test = mix.tests[type];
-                    if (!test) return;
+                const t7 = mix.tests.day7 || {};
+                const t28 = mix.tests.day28 || {};
 
-                    // استبعاد الطلبات المكتملة عند تصفح "التنبيهات النشطة فقط" لكي يخرج الطلب إلى جدول السجلات
-                    if (test.status === 'COMPLETED' && filter === 'ALL') {
-                        return;
-                    }
+                const is7Completed = t7.status === 'COMPLETED';
+                const is28Completed = t28.status === 'COMPLETED';
+                const bothCompleted = is7Completed && is28Completed;
 
-                    const labelType = type === 'day7' ? '7 أيام' : '28 يوماً';
-                    let statusLabel = '', badgeClass = '';
-                    const diffDays = Math.ceil((new Date(test.dueDate) - new Date(today)) / (1000 * 60 * 60 * 24));
+                let include = false;
+                if (filter === 'ALL') {
+                    // يظهر الصف طالما هناك فحص واحد على الأقل لم يكتمل بعد
+                    include = !bothCompleted;
+                } else if (filter === 'DUE') {
+                    include = (!is7Completed && t7.dueDate === today) || (!is28Completed && t28.dueDate === today);
+                } else if (filter === 'OVERDUE') {
+                    include = (!is7Completed && t7.dueDate < today) || (!is28Completed && t28.dueDate < today);
+                } else if (filter === 'UPCOMING') {
+                    include = (!is7Completed && t7.dueDate > today) || (!is28Completed && t28.dueDate > today);
+                } else if (filter === 'COMPLETED') {
+                    include = bothCompleted;
+                }
 
-                    if (test.status === 'COMPLETED') { 
-                        statusLabel = 'مكتمل'; 
-                        badgeClass = 'badge-success'; 
-                    }
-                    else if (test.dueDate === today) { 
-                        statusLabel = 'مستحق اليوم'; 
-                        badgeClass = 'badge-warning'; 
-                    }
-                    else if (test.dueDate < today) { 
-                        statusLabel = 'متأخر'; 
-                        badgeClass = 'badge-danger'; 
-                    }
-                    else { 
-                        statusLabel = 'قادم'; 
-                        badgeClass = 'badge-secondary'; 
-                    }
+                if (include) {
+                    const cell7 = buildAlertAgeCell(mix, 'day7', today, canEdit);
+                    const cell28 = buildAlertAgeCell(mix, 'day28', today, canEdit);
+                    const editTd = canEdit ? `
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editMixRecord('${mix.docId}')">
+                                <i class="fa-solid fa-pen-to-square"></i> تعديل
+                            </button>
+                        </td>` : '';
 
-                    let include = false;
-                    if (filter === 'ALL' && test.status !== 'COMPLETED') include = true;
-                    else if (filter === 'DUE' && test.status !== 'COMPLETED' && test.dueDate === today) include = true;
-                    else if (filter === 'OVERDUE' && test.status !== 'COMPLETED' && test.dueDate < today) include = true;
-                    else if (filter === 'UPCOMING' && test.status !== 'COMPLETED' && test.dueDate > today) include = true;
-                    else if (filter === 'COMPLETED' && test.status === 'COMPLETED') include = true;
-
-                    if (include) {
-                        let daysText = test.status === 'COMPLETED' ? '-' : (diffDays < 0 ? `متأخر ${Math.abs(diffDays)} يوم` : (diffDays === 0 ? 'اليوم' : `متبقي ${diffDays} يوم`));
-                        
-                        let actionTd = canEdit ? `
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="openTestModal('${mix.docId}', '${type}')"><i class="fa-solid fa-vial"></i> نتيجة الفحص</button>
-                                <button class="btn btn-secondary btn-sm" onclick="editMixRecord('${mix.docId}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
-                            </td>` : '';
-                        
-                        tbody.innerHTML += `<tr>
-                            <td><strong>${mix.id}</strong></td>
-                            <td>${mix.companyName} - ${mix.siteName}</td>
-                            <td><span class="badge badge-secondary">${mix.codeName}</span></td>
-                            <td>${labelType}</td>
-                            <td>${test.dueDate}</td>
-                            <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
-                            <td>${daysText}</td>
-                            ${actionTd}
-                        </tr>`;
-                    }
-                });
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${mix.id}</strong></td>
+                        <td><strong>${mix.companyName}</strong>${mix.siteName && mix.siteName !== '-' ? `<br><small style="color: var(--text-muted);">${mix.siteName}</small>` : ''}</td>
+                        <td><span class="badge badge-secondary">${mix.codeName}</span></td>
+                        <td>${cell7}</td>
+                        <td>${cell28}</td>
+                        ${editTd}
+                    </tr>`;
+                }
             });
         }
 
@@ -1624,25 +1765,62 @@
             }
         }
 
+        // دالة توليد خلية المعدل مع نافذة تلميح المكعبات الثلاثة عند تمرير الماوس
+        function renderAvgWithCubeTooltip(test, ageLabel) {
+            if (!test || test.result === null || test.result === undefined) {
+                return '-';
+            }
+            const c1 = (test.cube1 !== null && test.cube1 !== undefined) ? `${test.cube1} MPa` : 'غير مسجل';
+            const c2 = (test.cube2 !== null && test.cube2 !== undefined) ? `${test.cube2} MPa` : 'غير مسجل';
+            const c3 = (test.cube3 !== null && test.cube3 !== undefined) ? `${test.cube3} MPa` : 'غير مسجل';
+
+            return `
+                <div class="cube-tooltip-wrapper">
+                    <span>${test.result} MPa</span>
+                    <i class="fa-solid fa-cubes" style="font-size: 0.78rem; color: var(--primary);"></i>
+                    <div class="cube-tooltip-box">
+                        <div class="cube-tooltip-title">
+                            <i class="fa-solid fa-cubes"></i> نتائج مكعبات (${ageLabel})
+                        </div>
+                        <div class="cube-tooltip-row"><span>المكعب الأول:</span> <strong>${c1}</strong></div>
+                        <div class="cube-tooltip-row"><span>المكعب الثاني:</span> <strong>${c2}</strong></div>
+                        <div class="cube-tooltip-row"><span>المكعب الثالث:</span> <strong>${c3}</strong></div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderGeneralLogTable() {
             const tbody = document.getElementById('general-log-table-body');
             tbody.innerHTML = '';
             const search = document.getElementById('search-log-input').value.toLowerCase();
             const filterComp = document.getElementById('filter-log-company').value;
             const filterCode = document.getElementById('filter-log-code').value;
+            const filterStatus = document.getElementById('filter-log-status').value;
             const isTesterOrAdmin = currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'TESTER');
 
             dbCache.mixes.forEach(mix => {
                 if (!mix.tests) return;
                 const t7 = mix.tests.day7 || {}, t28 = mix.tests.day28 || {};
+                
+                let overallStatus = 'PENDING';
                 let overallBadge = '<span class="badge badge-secondary">قيد الفحص</span>';
                 if (t7.status === 'COMPLETED' && t28.status === 'COMPLETED') {
-                    overallBadge = (t7.isPassed && t28.isPassed) ? '<span class="badge badge-success">ناجح ومستوفي</span>' : '<span class="badge badge-danger">غير مستوفي</span>';
+                    if (t7.isPassed && t28.isPassed) {
+                        overallStatus = 'PASSED';
+                        overallBadge = '<span class="badge badge-success">ناجح ومستوفي</span>';
+                    } else {
+                        overallStatus = 'FAILED';
+                        overallBadge = '<span class="badge badge-danger">غير مستوفي</span>';
+                    }
                 }
 
-                if ((mix.id.toLowerCase().includes(search) || mix.companyName.toLowerCase().includes(search)) &&
-                    (!filterComp || mix.companyName === filterComp) && (!filterCode || mix.codeName === filterCode)) {
-                    
+                const matchesSearch = mix.id.toLowerCase().includes(search) || mix.companyName.toLowerCase().includes(search) || (mix.siteName && mix.siteName.toLowerCase().includes(search));
+                const matchesComp = !filterComp || mix.companyName === filterComp;
+                const matchesCode = !filterCode || mix.codeName === filterCode;
+                const matchesStatus = !filterStatus || overallStatus === filterStatus;
+
+                if (matchesSearch && matchesComp && matchesCode && matchesStatus) {
                     let actionTd = isTesterOrAdmin ? `
                         <td>
                             <button class="btn btn-secondary btn-sm" onclick="editMixRecord('${mix.docId}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
@@ -1652,15 +1830,15 @@
                     tbody.innerHTML += `<tr>
                         <td><strong>${mix.id}</strong></td>
                         <td>${mix.date}</td>
-                        <td>${mix.companyName}<br><small>${mix.siteName}</small></td>
+                        <td>${mix.companyName}<br><small style="color:var(--text-muted);">${mix.siteName}</small></td>
                         <td><span class="badge badge-secondary">${mix.codeName}</span></td>
                         <td>${mix.sand}</td>
                         <td>${mix.gravel}</td>
                         <td>${mix.cement} <small style="color:var(--text-muted);">(${mix.cementType || '-'})</small></td>
                         <td>${mix.water}</td>
                         <td>${mix.additive} <small style="color:var(--text-muted);">(${mix.additiveType || '-'})</small></td>
-                        <td>${t7.result !== null && t7.result !== undefined ? t7.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t7)}</td>
-                        <td>${t28.result !== null && t28.result !== undefined ? t28.result + ' MPa' : '-'}</td><td>${renderStatusBadge(t28)}</td>
+                        <td>${renderAvgWithCubeTooltip(t7, '7 أيام')}</td><td>${renderStatusBadge(t7)}</td>
+                        <td>${renderAvgWithCubeTooltip(t28, '28 يوماً')}</td><td>${renderStatusBadge(t28)}</td>
                         <td>${overallBadge}</td>
                         ${actionTd}
                     </tr>`;
